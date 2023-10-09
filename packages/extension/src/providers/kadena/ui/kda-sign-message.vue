@@ -62,6 +62,8 @@ import {
   DEFAULT_KADENA_NETWORK,
   getNetworkByName,
 } from "@/libs/utils/networks";
+import { blake2AsU8a } from "@polkadot/util-crypto";
+import { bufferToHex } from "@enkryptcom/utils";
 
 const windowPromise = WindowPromiseHandler(0);
 const network = ref<KadenaNetwork>(DEFAULT_KADENA_NETWORK);
@@ -78,7 +80,7 @@ const account = ref({ address: "" } as EnkryptAccount);
 
 onBeforeMount(async () => {
   const { Request, options } = await windowPromise;
-  console.log(Request.value.params);
+
   Options.value = options;
   message.value = Request.value.params![0].data;
   account.value = Request.value.params![1] as EnkryptAccount;
@@ -96,11 +98,11 @@ const approve = async () => {
   TransactionSigner({
     account,
     network: network.value,
-    payload: msg.data,
+    payload: bufferToHex(blake2AsU8a(msg.data)),
   })
     .then((res) => {
       Resolve.value({
-        result: res.result as string,
+        result: res.result?.replace("0x", "") as string,
       });
     })
     .catch((er) => {
@@ -109,6 +111,7 @@ const approve = async () => {
       });
     });
 };
+
 const deny = async () => {
   const { Resolve } = await windowPromise;
 

@@ -73,11 +73,11 @@ const method: MiddlewareFunction = function (
           selectedNetwork: selectedNetworkName
             ? getNetworkInfo(selectedNetworkName)
             : null,
-          selectedAccountAddress: account?.address || "",
+          selectedAccountAddress: account?.address.replace("0x", "k:") || "",
           accounts: accounts.map((acc) => {
             return {
-              address: acc.address,
-              publicKey: acc.publicKey,
+              address: acc.address.replace("0x", "k:"),
+              publicKey: acc.publicKey.replace("0x", ""),
               genesisHash: "",
               name: acc.name,
               type: acc.signerType,
